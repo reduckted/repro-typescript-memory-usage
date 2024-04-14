@@ -1,7 +1,11 @@
 const ts = require("typescript");
 const path = require("path");
+const { reportStatistics } = require("./extended-diagnostics");
 
 let tsconfigPath = path.join(__dirname, "tsconfig.memory.json");
+
+// @ts-ignore
+ts.performance.enable();
 
 let host = ts.createWatchCompilerHost(
   tsconfigPath,
@@ -38,4 +42,7 @@ let program = ts.createWatchProgram(host);
 console.log(
   `Memory after:  ${Math.trunc(process.memoryUsage().heapUsed / 1048576)} MB`
 );
+
+reportStatistics(ts.sys, program.getProgram().getProgram(), undefined);
+
 program.close();
